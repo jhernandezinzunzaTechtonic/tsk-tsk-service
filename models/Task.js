@@ -9,7 +9,7 @@ var TaskSchema = new mongoose.Schema({
   taskDescription: String,
   dateAdded: Date,
   dateDue: Date,
-  // userID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 mongoose.model('Task', TaskSchema);

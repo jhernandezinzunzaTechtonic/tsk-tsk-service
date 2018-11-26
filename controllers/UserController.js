@@ -14,12 +14,10 @@ const router = express.Router();
 // The middleware was a part of Express.js earlier, but now you have to install it separately.  For more info, see https://github.com/expressjs/body-parser.
 // This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.  For more info, see https://stackoverflow.com/questions/38306569/what-does-body-parser-do-with-express.
 // limit
-// Controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
 router.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
 
-// Register user
+// Register user, does not allow duplicate emails.
 router.post('/register', (req, res) => {
-  console.log(req.body);
   let hashedPassword = bcrypt.hashSync(req.body.password, 8); // req.body.password must exist, see terminal for error
   User.create({
       firstName: req.body.firstName,
@@ -28,14 +26,13 @@ router.post('/register', (req, res) => {
       hashedPassword: hashedPassword,
       taskList: new Array(),
     }, (err, user) => {
-      console.log(err);
       if (err) return res.status(500).send(err.message);
-      res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 60 }) });
+      res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 120 }) });
     });
 });
 
+// Make sure users token is valid.
 router.get('/verify', (req, res) => {
-  // console.log(req.headers);
   let token = req.headers['x-access-token'];
   verifyJWTToken(token)
   .then(function (decodedToken) {
@@ -46,21 +43,23 @@ router.get('/verify', (req, res) => {
   });
 });
 
+// Log-in the user.
 router.post('/login', (req, res) => {
   User.findOne({ email: req.body.email },
     function (err, user) {
-      if (err) {
+      if (err) { // Catch common errors first/
         return res.status(500).send('Error on the server.');
       } else if (!user) {
         return res.status(500).send('No user found.');
-      } else if (bcryptjs.compareSync(req.body.password, user.password)) {
-        return res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 3600 }), name: (user.firstName + ' ' + user.lastName) });
+      } else if (bcrypt.compareSync(req.body.password, user.hashedPassword)) {  // Check password. NOTE: Name is returned as an object.
+        return res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 3600 }), name: { firstName: user.firstName, lastName: user.lastName } });
       } else {
         return res.status(401).send({ auth: true, token: null, message: 'Invalid password provided' });
       }
     });
 });
 
+// How do we want to handle this?
 router.get('/logout', (req, res) => res.status(200).send({ auth: false, token: null }));
 
 module.exports = router;

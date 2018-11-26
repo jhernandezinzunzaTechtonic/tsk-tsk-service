@@ -1,7 +1,7 @@
-const verifyJWT_MW = require('../middlewares');
+import { verifyJWT_MW } from '../middlewares';
 const express = require('express');
 const bodyParser = require('body-parser');
-// This is your Library model,aka the schema definition for your task document.  This is a Mongoose model.  For more information, see https://mongoosejs.com/docs/models.html.
+// This is your Task model,aka the schema definition for your task document.  This is a Mongoose model.  For more information, see https://mongoosejs.com/docs/models.html.
 const Task = require('../models/Task');
 const mongoose = require('mongoose');
 
@@ -9,15 +9,13 @@ const mongoose = require('mongoose');
 // A Router instance is a complete middleware and routing system.
 const router = express.Router();
 
-// router.all('*', verifyJWT_MW);
+router.all('*', verifyJWT_MW);
 
 // body-parser extracts the entire body portion of an incoming request stream and exposes it on req.body
-// The middleware was a part of Express.js earlier, but now you have to install it separately.  For more info, see https://github.com/expressjs/body-parser.
-// This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.  For more info, see https://stackoverflow.com/questions/38306569/what-does-body-parser-do-with-express.
-// limit
-// Controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
+// This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.
+// limit controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
 router.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
-// router.use(bodyParser.json({ extended: true, limit: '5mb' }));
+// router.use(bodyParser.json({ extended: true, limit: '5mb' })); // Potential use if we need to send data differently.
 
 // Main get route to retrive tasks.
 router.get('/', (req, res) => {
@@ -29,12 +27,13 @@ router.get('/', (req, res) => {
 
 // Create a new task and post it to the database.
 router.post('/', (req, res) => {
+  req.body['userID'] = req.user._doc._id; // Add user's ID field to the task being createde.
   Task.create({
     taskTitle: req.body.taskTitle,
     taskDescription: req.body.taskDescription,
     dateAdded: req.body.dateAdded,
     dateDue: req.body.dateDue,
-    // userID: req.body.userID, // FOR FUTURE USE UPON IMPLEMENTATION OF USERS
+    userID: req.body.userID, // This creates our one-to-many relationship.
   }, function (err, task) {
       if (err) return res.status(500).send('There was a problem creating the task');
       res.status(200).send(task);

@@ -49,3 +49,7 @@ export function createJWToken(details)
 
   return token;
 }
+
+export function addID(userID) {
+    task['userID'] = req.user._doc._id;
+}
