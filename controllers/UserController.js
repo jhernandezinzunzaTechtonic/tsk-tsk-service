@@ -26,7 +26,7 @@ router.post('/register', (req, res) => {
       taskList: new Array(),
     }, (err, user) => {
       if (err) return res.status(500).send(err.message);
-      res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 120 }) });
+      res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 3600 }) });
     });
 });
 
