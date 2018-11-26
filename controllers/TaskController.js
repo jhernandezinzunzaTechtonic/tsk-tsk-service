@@ -14,7 +14,7 @@ router.all('*', verifyJWT_MW);
 // body-parser extracts the entire body portion of an incoming request stream and exposes it on req.body
 // This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.
 // limit controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
-router.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
+router.use(bodyParser.json({ extended: true, limit: '5mb' }));
 // router.use(bodyParser.json({ extended: true, limit: '5mb' })); // Potential use if we need to send data differently.
 
 // Main get route to retrive tasks.
@@ -27,7 +27,7 @@ router.get('/', (req, res) => {
 
 // Create a new task and post it to the database.
 router.post('/', (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   req.body['userID'] = req.user._doc._id; // Add user's ID field to the task being createde.
   Task.create({
     taskTitle: req.body.taskTitle,

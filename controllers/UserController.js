@@ -14,14 +14,13 @@ const router = express.Router();
 // The middleware was a part of Express.js earlier, but now you have to install it separately.  For more info, see https://github.com/expressjs/body-parser.
 // This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.  For more info, see https://stackoverflow.com/questions/38306569/what-does-body-parser-do-with-express.
 // limit
-router.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
+router.use(bodyParser.json({ extended: true, limit: '5mb' }));
 
 // Register user, does not allow duplicate emails.
 router.post('/register', (req, res) => {
   let hashedPassword = bcrypt.hashSync(req.body.password, 8); // req.body.password must exist, see terminal for error
   User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
+      username: req.body.username,
       email: req.body.email,
       hashedPassword: hashedPassword,
       taskList: new Array(),
@@ -45,6 +44,7 @@ router.get('/verify', (req, res) => {
 
 // Log-in the user.
 router.post('/login', (req, res) => {
+  console.log(req.body);
   User.findOne({ email: req.body.email },
     function (err, user) {
       if (err) { // Catch common errors first/
