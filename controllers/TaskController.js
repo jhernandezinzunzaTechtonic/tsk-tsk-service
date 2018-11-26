@@ -27,12 +27,14 @@ router.get('/', (req, res) => {
 
 // Create a new task and post it to the database.
 router.post('/', (req, res) => {
+  console.log(req.user);
   req.body['userID'] = req.user._doc._id; // Add user's ID field to the task being createde.
   Task.create({
     taskTitle: req.body.taskTitle,
     taskDescription: req.body.taskDescription,
     dateAdded: req.body.dateAdded,
     dateDue: req.body.dateDue,
+    completed: false,
     userID: req.body.userID, // This creates our one-to-many relationship.
   }, function (err, task) {
       if (err) return res.status(500).send('There was a problem creating the task');
@@ -59,10 +61,6 @@ router.put('/:id', function (req, res) {
     });
 });
 
-
-
-
-
 // // Step 1. Create a GET route that RETURNS ALL THE BOOKS IN YOUR DATABASE here.
 // router.get('/?', function (req, res) {
 //   // console.log(req.user);
@@ -87,31 +85,5 @@ router.put('/:id', function (req, res) {
 //     res.status(200).send(randomBook);
 //   });
 // });
-//
-// router.get('/showAllAuthors', function (req, res) {
-//   let user = mongoose.Types.ObjectId(req.user._doc._id);
-//   Library.find({ userID: user }).distinct('author',
-//     function (err, authorList) {
-//     if (err) return res.status(500).send('There was a problem finding books.');
-//     res.status(200).send(authorList);
-//   });
-// });
-//
-// router.delete('/deleteBy?', function (req, res) {
-//   if (req.query.title == '' && req.query.author == '') {
-//     //Do nothing, no valid search.
-//     console.log('No queries');
-//   } else {
-//     Library.deleteMany({
-//       $or: [
-//       { title: req.query.title },
-//       { author: req.query.author },
-//     ]}).exec((err, books) => {
-//         if (err) return res.status(500).send('There was a problem finding books.');
-//         res.status(200).send(books);
-//       });
-//   }
-// });
-
 
 module.exports = router;

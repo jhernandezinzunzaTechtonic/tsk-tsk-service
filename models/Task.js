@@ -9,6 +9,7 @@ var TaskSchema = new mongoose.Schema({
   taskDescription: String,
   dateAdded: Date,
   dateDue: Date,
+  completed: Boolean,
   userID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 

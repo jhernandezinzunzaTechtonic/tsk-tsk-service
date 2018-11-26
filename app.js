@@ -12,7 +12,7 @@ const UserController = require('./controllers/UserController');
 app.use(cors());
 
 app.use('/tsktsk', TaskController);
-app.use('/auth', UserController); // Not set up yet
+app.use('/auth', UserController);
 
 
 //FORMAT OF token
