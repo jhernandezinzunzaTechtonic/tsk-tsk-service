@@ -16,20 +16,29 @@ router.all('*', verifyJWT_MW);
 // This body-parser module, parses the JSON, buffer, string and URL-encoded data submitted using an HTTP POST request.
 // limit controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
 router.use(bodyParser.json({ extended: true, limit: '5mb' }));
-// router.use(bodyParser.json({ extended: true, limit: '5mb' })); // Potential use if we need to send data differently.
 
-// Main get route to retrive tasks.
+// Main get route to retrive tasks user specific tasks.
+// router.get('/', (req, res) => {
+//   Task.find({}, (err, taskList) => {
+//     if (err) return res.status(500).send('There was a problem retrieving the tasks');
+//     res.status(200).send(taskList);
+//   });
+// });
+
 router.get('/', (req, res) => {
-  Task.find({}, (err, taskList) => {
+  let userID = mongoose.Types.ObjectId(req.user._doc._id);
+  User.findOne({ _id: userID })
+  .populate('taskList')
+  .exec((err, result) => {
+    console.log(result);
     if (err) return res.status(500).send('There was a problem retrieving the tasks');
-    res.status(200).send(taskList);
+    res.status(200).send(result.taskList);
   });
 });
 
 // Create a new task and post it to the database.
 router.post('/', (req, res) => {
-  // console.log(req.user);
-  req.body['userID'] = req.user._doc._id; // Add user's ID field to the task being createde.
+  console.log(req.body);
   let userID = mongoose.Types.ObjectId(req.user._doc._id);
   Task.create({
     taskTitle: req.body.taskTitle,
@@ -51,7 +60,7 @@ router.post('/', (req, res) => {
 
 // Delete a task from the database.
 router.delete('/', function (req, res) { //using deleteMany for future use
-  console.log(req.body);
+  // console.log(req.body);
   Task.deleteMany({ _id: req.body._id },
     function (err, task) {
       if (err) return res.status(500).send('There was a problem removing the task.');
@@ -59,7 +68,7 @@ router.delete('/', function (req, res) { //using deleteMany for future use
     });
 });
 
-// Create a PUT route that UPDATES A SPECIFIC SINGLE BOOK IN THE DATABASE here.
+// Create a PUT route that UPDATES A SPECIFIC SINGLE TASK IN THE DATABASE here.
 router.put('/:id', function (req, res) {
   Task.findOneAndUpdate(req.params._id, req.body, { new: true })
   .exec((err, books) => {

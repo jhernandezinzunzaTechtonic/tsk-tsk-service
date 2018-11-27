@@ -8,7 +8,7 @@ var UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, index: true, unique: true, required: [true, 'Do you even email?'] },
   hashedPassword: { type: String, required: true },
-  taskList: Array,
+  taskList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
 });
 
 mongoose.model('User', UserSchema);
