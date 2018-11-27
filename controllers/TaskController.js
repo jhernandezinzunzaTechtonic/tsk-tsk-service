@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // This is your Task model,aka the schema definition for your task document.  This is a Mongoose model.  For more information, see https://mongoosejs.com/docs/models.html.
 const Task = require('../models/Task');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 // Use the express.Router class to create modular, mountable route handlers.  For more info, see https://expressjs.com/en/guide/routing.html.
@@ -29,16 +30,22 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
   // console.log(req.user);
   req.body['userID'] = req.user._doc._id; // Add user's ID field to the task being createde.
+  let userID = mongoose.Types.ObjectId(req.user._doc._id);
   Task.create({
     taskTitle: req.body.taskTitle,
     taskDescription: req.body.taskDescription,
     dateAdded: req.body.dateAdded,
     dateDue: req.body.dateDue,
     completed: false,
-    userID: req.body.userID, // This creates our one-to-many relationship.
   }, function (err, task) {
-      if (err) return res.status(500).send('There was a problem creating the task');
-      res.status(200).send(task);
+      if (err) {
+        return res.status(500).send('There was a problem creating the task');
+      } else { // If task can be added, create relationship for specific user adding this task.
+        User.updateOne({ _id: userID }, { $push: { taskList: task._id } }, { new: true }, function (err, thing) {
+        console.log('updated taskList array');
+        });
+        return res.status(200).send(task);
+      }
     });
 });
 

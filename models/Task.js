@@ -10,7 +10,6 @@ var TaskSchema = new mongoose.Schema({
   dateAdded: Date,
   dateDue: Date,
   completed: Boolean,
-  userID: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 });
 
 mongoose.model('Task', TaskSchema);

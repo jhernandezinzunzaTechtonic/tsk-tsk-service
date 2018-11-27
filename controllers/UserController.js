@@ -47,14 +47,15 @@ router.post('/login', (req, res) => {
   console.log(req.body);
   User.findOne({ email: req.body.email },
     function (err, user) {
+      console.log(user);
       if (err) { // Catch common errors first/
         return res.status(500).send('Error on the server.');
       } else if (!user) {
         return res.status(500).send('No user found.');
       } else if (bcrypt.compareSync(req.body.password, user.hashedPassword)) {  // Check password. NOTE: Name is returned as an object.
-        return res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 3600 }), name: { firstName: user.firstName, lastName: user.lastName } });
+        return res.status(200).send({ auth: true, token: createJWToken({ sessionData: user, maxAge: 3600 }), name: user.username });
       } else {
-        return res.status(401).send({ auth: true, token: null, message: 'Invalid password provided' });
+        return res.status(401).send({ auth: false, token: null, message: 'Invalid password provided' });
       }
     });
 });
