@@ -23,9 +23,7 @@ router.get('/', (req, res) => {
   User.findOne({ _id: userID })
   .populate('taskList')
   .exec((err, result) => {
-
     let finalList = filterTasks(req.headers.pathname, result.taskList);
-    
     if (err) return res.status(500).send('There was a problem retrieving the tasks');
     res.status(200).send(finalList);
   });
@@ -74,7 +72,6 @@ router.delete('/', function (req, res) { //using deleteMany for future use
 // Create a PUT route that UPDATES A SPECIFIC SINGLE TASK IN THE DATABASE here.
 router.put('/:id', function (req, res) {
   let taskID = mongoose.Types.ObjectId(req.params.id);
-
   Task.findOneAndUpdate({ _id: taskID }, req.body, { new: true })
   .exec((err, books) => {
       if (err) return res.status(500).send('There was a problem updating the task.');
