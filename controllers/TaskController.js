@@ -60,12 +60,20 @@ router.post('/', (req, res) => {
 
 // Delete a task from the database.
 router.delete('/', function (req, res) { //using deleteMany for future use
-  // console.log(req.body);
+  let userID = mongoose.Types.ObjectId(req.user._doc._id);
+  let taskID = mongoose.Types.ObjectId(req.body._id);
   Task.deleteMany({ _id: req.body._id },
     function (err, task) {
+      User.updateOne(
+        {_id: userID }, { $pull: { taskList: taskID } }, function (err, response) {
+          console.log('updated user array');
+        }
+      );
+
       if (err) return res.status(500).send('There was a problem removing the task.');
       res.status(200).send(task);
     });
+
 });
 
 // Create a PUT route that UPDATES A SPECIFIC SINGLE TASK IN THE DATABASE here.
