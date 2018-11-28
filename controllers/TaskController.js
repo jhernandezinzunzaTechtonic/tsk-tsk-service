@@ -1,4 +1,5 @@
 import { verifyJWT_MW } from '../middlewares';
+import { filterTasks } from '../libs/Task';
 const express = require('express');
 const bodyParser = require('body-parser');
 // This is your Task model,aka the schema definition for your task document.  This is a Mongoose model.  For more information, see https://mongoosejs.com/docs/models.html.
@@ -17,22 +18,16 @@ router.all('*', verifyJWT_MW);
 // limit controls the maximum request body size. If this is a number, then the value specifies the number of bytes; if it is a string, the value is passed to the bytes library for parsing. Defaults to '100kb'.
 router.use(bodyParser.json({ extended: true, limit: '5mb' }));
 
-// Main get route to retrive tasks user specific tasks.
-// router.get('/', (req, res) => {
-//   Task.find({}, (err, taskList) => {
-//     if (err) return res.status(500).send('There was a problem retrieving the tasks');
-//     res.status(200).send(taskList);
-//   });
-// });
-
 router.get('/', (req, res) => {
   let userID = mongoose.Types.ObjectId(req.user._doc._id);
   User.findOne({ _id: userID })
   .populate('taskList')
   .exec((err, result) => {
-    console.log(result);
+
+    let finalList = filterTasks(req.headers.pathname, result.taskList);
+    
     if (err) return res.status(500).send('There was a problem retrieving the tasks');
-    res.status(200).send(result.taskList);
+    res.status(200).send(finalList);
   });
 });
 
@@ -84,30 +79,5 @@ router.put('/:id', function (req, res) {
       res.status(200).send(books);
     });
 });
-
-// // Step 1. Create a GET route that RETURNS ALL THE BOOKS IN YOUR DATABASE here.
-// router.get('/?', function (req, res) {
-//   // console.log(req.user);
-//   let queryData = buildMongoQuery(req.query, req.user._doc._id);
-//   Library.countDocuments(queryData.query,
-//     function (err, bookCount) {
-//       Library.find(queryData.query).skip(queryData.skip).limit(queryData.limit).exec((err, books) => {
-//         if (err) return res.status(500).send('There was a problem finding books.');
-//         res.status(200).send({ count: bookCount, bookList: books });
-//       });
-//     });
-// });
-
-// // Create a GET route that GETS A RANDOM BOOK FROM YOUR DATABASE here.
-// router.get('/random', function (req, res) {
-//   let user = mongoose.Types.ObjectId(req.user._doc._id);
-//   Library.aggregate()
-//   .match({ userID: user })
-//   .sample(1)
-//   .exec((err, randomBook) => {
-//     if (err) return res.status(500).send('There was a problem finding books.');
-//     res.status(200).send(randomBook);
-//   });
-// });
 
 module.exports = router;

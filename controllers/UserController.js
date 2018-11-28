@@ -44,10 +44,8 @@ router.get('/verify', (req, res) => {
 
 // Log-in the user.
 router.post('/login', (req, res) => {
-  // console.log(req.body);
   User.findOne({ email: req.body.email },
     function (err, user) {
-      // console.log(user);
       if (err) { // Catch common errors first/
         return res.status(500).send('Error on the server.');
       } else if (!user) {
