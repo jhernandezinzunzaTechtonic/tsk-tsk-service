@@ -78,7 +78,9 @@ router.delete('/', function (req, res) { //using deleteMany for future use
 
 // Create a PUT route that UPDATES A SPECIFIC SINGLE TASK IN THE DATABASE here.
 router.put('/:id', function (req, res) {
-  Task.findOneAndUpdate(req.params._id, req.body, { new: true })
+  let taskID = mongoose.Types.ObjectId(req.params.id);
+
+  Task.findOneAndUpdate({ _id: taskID }, req.body, { new: true })
   .exec((err, books) => {
       if (err) return res.status(500).send('There was a problem updating the task.');
       res.status(200).send(books);
