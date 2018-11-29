@@ -8,7 +8,7 @@ var TaskSchema = new mongoose.Schema({
   taskTitle: String,
   taskDescription: String,
   dateAdded: Date,
-  dateDue: Date,
+  dueDate: Date,
   completed: Boolean,
 });
 
