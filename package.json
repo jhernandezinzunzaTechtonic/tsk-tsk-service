@@ -21,5 +21,8 @@
     "lodash": "^4.17.11",
     "mongoose": "^5.3.13",
     "nodemon": "^1.18.6"
+  },
+  "devDependencies": {
+    "riek": "^1.1.0"
   }
 }

@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
     taskTitle: req.body.taskTitle,
     taskDescription: req.body.taskDescription,
     dateAdded: req.body.dateAdded,
-    dateDue: req.body.dateDue,
+    dueDate: req.body.dueDate,
     completed: false,
   }, function (err, task) {
       if (err) {
