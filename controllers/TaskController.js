@@ -58,7 +58,7 @@ router.delete('/', function (req, res) { //using deleteMany for future use
   Task.deleteMany({ _id: req.body._id },
     function (err, task) {
       User.updateOne(
-        {_id: userID }, { $pull: { taskList: taskID } }, function (err, response) {
+        { _id: userID }, { $pull: { taskList: taskID } }, function (err, response) {
           console.log('updated user array');
         }
       );
@@ -66,7 +66,6 @@ router.delete('/', function (req, res) { //using deleteMany for future use
       if (err) return res.status(500).send('There was a problem removing the task.');
       res.status(200).send(task);
     });
-
 });
 
 // Create a PUT route that UPDATES A SPECIFIC SINGLE TASK IN THE DATABASE here.
