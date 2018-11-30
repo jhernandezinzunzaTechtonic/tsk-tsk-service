@@ -10,6 +10,7 @@ var TaskSchema = new mongoose.Schema({
   dateAdded: Date,
   dueDate: Date,
   completed: Boolean,
+  dateCompleted: Date,
 });
 
 mongoose.model('Task', TaskSchema);
