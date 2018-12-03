@@ -1,5 +1,5 @@
 import { verifyJWT_MW } from '../middlewares';
-import { filterTasks } from '../libs/Task';
+import { filterTasks, sortTasks, calcDaysOld } from '../libs/Task';
 const express = require('express');
 const bodyParser = require('body-parser');
 // This is your Task model,aka the schema definition for your task document.  This is a Mongoose model.  For more information, see https://mongoosejs.com/docs/models.html.
@@ -23,15 +23,17 @@ router.get('/', (req, res) => {
   User.findOne({ _id: userID })
   .populate('taskList')
   .exec((err, result) => {
+    // console.log(result, 'result');
     let finalList = filterTasks(req.headers.pathname, result.taskList);
+    let updatedTaskList = sortTasks(finalList);
     if (err) return res.status(500).send('There was a problem retrieving the tasks');
-    res.status(200).send(finalList);
+    res.status(200).send(updatedTaskList);
   });
 });
 
 // Create a new task and post it to the database.
 router.post('/', (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   let userID = mongoose.Types.ObjectId(req.user._doc._id);
   Task.create({
     taskTitle: req.body.taskTitle,
