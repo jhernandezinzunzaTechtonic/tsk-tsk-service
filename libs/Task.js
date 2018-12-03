@@ -14,7 +14,7 @@ export function filterTasks(path, list) {
   }
 }
 
-const calcDaysOld = (dateAdded, currentDate) => {
+export const calcDaysOld = (dateAdded, currentDate) => {
   var oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
   dateAdded = new Date(dateAdded).getTime();
   currentDate = new Date().getTime();
